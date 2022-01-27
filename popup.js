@@ -1,24 +1,31 @@
-// Initialize button with user's preferred color
-let changeColor = document.getElementById("changeColor");
+let startButton = document.getElementById("start");
 
-chrome.storage.sync.get("color", ({ color }) => {
-    changeColor.style.backgroundColor = color;
-});
-
-// When the button is clicked, inject setPageBackgroundColor into current page
-changeColor.addEventListener("click", async() => {
+startButton.addEventListener("click", async() => {
     let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 
     chrome.scripting.executeScript({
         target: { tabId: tab.id },
-        function: setPageBackgroundColor,
+        files: ['html2canvas.min.js']
+    }, () => {
+        chrome.scripting.executeScript({
+            target: { tabId: tab.id },
+            function: takeScreenshotsOnClickListener
+        });
     });
 });
 
-// The body of this function will be executed as a content script inside the
-// current page
-function setPageBackgroundColor() {
-    chrome.storage.sync.get("color", ({ color }) => {
-        document.body.style.backgroundColor = color;
+function takeScreenshotsOnClickListener() {
+    document.addEventListener("click", async(event) => {
+        console.log('click');
+        var x = event.clientX,
+            y = event.clientY,
+            screenshotTarget = document.elementFromPoint(x, y);
+        screenshotTarget.style.border = "5px solid red";
+        html2canvas(document.body).then((canvas) => {
+            console.log('screenshot');
+            document.body.append("screenshot:");
+            document.body.appendChild(canvas);
+            screenshotTarget.style.border = "";
+        });
     });
 }

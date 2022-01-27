@@ -4,13 +4,12 @@
     "version": "1.0",
     "manifest_version": 3,
     "background": {
-        "service_worker": "script.js"
+        "service_worker": "setup.js"
     },
-    "options_page": "options.html",
     "permissions": [
-        "storage",
         "activeTab",
-        "scripting"
+        "scripting",
+        "pageCapture"
     ],
     "action": {
         "default_popup": "popup.html",
