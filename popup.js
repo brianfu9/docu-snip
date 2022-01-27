@@ -15,15 +15,26 @@ startButton.addEventListener("click", async() => {
 });
 
 function takeScreenshotsOnClickListener() {
-    document.addEventListener("click", async(event) => {
+    document.addEventListener('mousemove', function(mouseMoveEvent) {
+        mousePosition = {}
+        mousePosition.x = mouseMoveEvent.pageX;
+        mousePosition.y = mouseMoveEvent.pageY;
+    });
+    document.addEventListener("keypress", async(event) => {
+        if (event.key != 'p') return;
         console.log('click');
-        var x = event.clientX,
-            y = event.clientY,
+        var x = mousePosition.x,
+            y = mousePosition.y,
             screenshotTarget = document.elementFromPoint(x, y);
         screenshotTarget.style.border = "5px solid red";
-        html2canvas(document.body).then((canvas) => {
+        var target = document.body;
+        var screenshots = target.getElementsByClassName('screenshot');
+        while (screenshots[0]) {
+            screenshots[0].parentNode.removeChild(screenshots[0]);
+        }
+        html2canvas(target).then((canvas) => {
+            canvas.classList.add('screenshot');
             console.log('screenshot');
-            document.body.append("screenshot:");
             document.body.appendChild(canvas);
             screenshotTarget.style.border = "";
         });
